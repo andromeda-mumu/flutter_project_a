@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_a/http/Http_util_with_cookie.dart';
 import 'package:flutter_project_a/http/api.dart';
+import 'package:flutter_project_a/page/activity_detail_page.dart';
+import 'package:flutter_project_a/page/login_page.dart';
 import 'package:flutter_project_a/util/DataUtils.dart';
 import 'package:flutter_project_a/util/StringUtils.dart';
 /**
@@ -38,7 +40,7 @@ class ArticleItemState extends State<ArticleItem> {
   void _handleOnItemCollect(itemData) {
     DataUtils.isLogin().then((isLogin){
       if(!isLogin){
-//        _login();
+        _login();
       print("mmc= 去登录");
       }else{
         _itemCollect(itemData);
@@ -46,11 +48,11 @@ class ArticleItemState extends State<ArticleItem> {
     });
   }
 
-//  _login(){
-//    Navigator.of(context).push(MaterialPageRoute(builder: (context){
-//      return LoginPage();
-//    }));
-//  }
+  _login(){
+    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+      return LoginPage();
+    }));
+  }
 
   //收藏 /取消收藏
   void _itemCollect(var itemData){
@@ -60,7 +62,7 @@ class ArticleItemState extends State<ArticleItem> {
     }else{
       url = Api.COLLECT;
     }
-    url+='${itemData['id']}/json';
+    url += '${itemData["id"]}/json';
     HttpUtil.post(url, (data){
       setState(() {
         itemData['collect']=!itemData['collect'];
@@ -143,8 +145,8 @@ class ArticleItemState extends State<ArticleItem> {
       child: InkWell(
         child: column,
         onTap: (){
-//          _itemClick(widget.itemData);
-        print("mmc= 点击了"+widget.itemData.toString());
+          _itemClick(widget.itemData);
+        print("mmc= 点击了"+widget.itemData['title']);
         },
       ),
     );
@@ -152,9 +154,7 @@ class ArticleItemState extends State<ArticleItem> {
 
   void _itemClick(itemData)async{
     await Navigator.of(context).push(MaterialPageRoute(builder: (context){
-//      return ArticleDetailPage(
-//
-//      )
+      return ArticleDetailPage(title: itemData['title'],url: itemData['link'],);
     }));
   }
 }

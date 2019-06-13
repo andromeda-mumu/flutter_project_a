@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project_a/page/activity_detail_page.dart';
 /**
  * Created by wangjiao on 2019/6/13.
  * description:
@@ -38,7 +39,7 @@ import 'package:flutter/material.dart';
           item['link']=item['url'];
           items.add(new GestureDetector(
             onTap: (){
-//              _handOnItemClick(item);
+              _handOnItemClick(item);
             print("mmc= 点击了banner"+title);
             },
             child: AspectRatio(
@@ -64,6 +65,8 @@ import 'package:flutter/material.dart';
      return new TabBarView(children: items,controller: tabController,);
    }
    void _handOnItemClick(itemData){
-
+      Navigator.of(context).push(new MaterialPageRoute(builder: (context){
+        return new ArticleDetailPage(title: itemData['title'],url: itemData['link'],);
+      }));
    }
  }
