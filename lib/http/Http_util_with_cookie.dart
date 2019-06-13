@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'api.dart';
 /**
@@ -64,7 +65,14 @@ class HttpUtil{
         Map<String,String> headerMap = headers==null?new Map():headers;
         Map<String,String> paramsMap = params==null?new Map():params;
 
-        //统一添加cookie,不应该写在这里
+        //统一添加cookie(写在这是不是也有些不优雅)
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        String cookie = sp.get("cookie");
+        if(cookie==null || cookie.length==0){
+        }else{
+          headerMap['Cookie'] = cookie;
+        }
+
         http.Response res;
         if (POST == method) {
           print("POST:URL="+url);
@@ -90,7 +98,12 @@ class HttpUtil{
         errorMsg = map['errorMsg'];
         data = map['data'];
 
+      //报存登录接口的cookie,写在这里有些不优雅(0-0)
+      if(url.contains(Api.LOGIN)){
+          SharedPreferences sp = await SharedPreferences.getInstance();
+          sp.setString("cookie", res.headers['set-cookie']);
 
+      }
         // callback返回data,数据类型为dynamic
         //errorCallback中为了方便我直接返回了String类型的errorMsg
         if (callback != null) {
