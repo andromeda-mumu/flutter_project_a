@@ -62,7 +62,7 @@ class _WanAndroidAppState extends State<WanAndroidApp> {
                        icon: Icon(Icons.search),
                        onPressed: (){
                          navigatorKey.currentState.push(MaterialPageRoute(builder: (context){
-                           return SearchPage();
+                           return SearchPage(null);
                          }));
                },
              )
