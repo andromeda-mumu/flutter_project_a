@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_a/http/Http_util_with_cookie.dart';
 import 'package:flutter_project_a/http/api.dart';
+
+import 'articles_page.dart';
 /**
  * Created by wangjiao on 2019/6/12.
  * description:
@@ -61,7 +63,7 @@ class _TreePageState extends State<TreePage> {
       child: InkWell(
         onTap: (){
           print("mmc= 点击"+itemData['name']);
-//          _handOnItemClick(itemData);
+          _handOnItemClick(itemData);
         },
         child: Container(
           padding: EdgeInsets.all(15),
@@ -89,5 +91,10 @@ class _TreePageState extends State<TreePage> {
     );
   }
 
+  void _handOnItemClick(itemData){
+    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+      return ArticlesPage(itemData);
+    }));
+  }
 
 }
