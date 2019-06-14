@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_a/constant/Constants.dart';
+import 'package:flutter_project_a/event/UnCollectEvent.dart';
 import 'package:flutter_project_a/http/Http_util_with_cookie.dart';
 import 'package:flutter_project_a/http/api.dart';
+import 'package:flutter_project_a/item/collect_item.dart';
 import 'package:flutter_project_a/util/DataUtils.dart';
 import 'package:flutter_project_a/widget/end_line.dart';
 
@@ -46,6 +48,13 @@ class _CollectListPageState extends State<CollectListPage> {
       if(maxScroll == pixels && listData.length<listTotalSize){
         _getCollectList();
       }
+    });
+
+    Constants.eventBus.on<UnCollectEvent>().listen((event){
+      setState(() {
+        listData.remove(event.itemData);
+      });
+
     });
   }
   @override
@@ -108,106 +117,11 @@ class _CollectListPageState extends State<CollectListPage> {
     if(i==listData.length-1 && itemData.toString()==Constants.END_LINE_TAG){
       return EndLine();
     }
-    Row row1 = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          child: Row(
-            children: <Widget>[
-              Text('作者： '),
-              Text(itemData['author'],style: TextStyle(color: Theme.of(context).accentColor),)
-            ],
-          ),
-        ),
-        Text(itemData['niceDate']),
-      ],
-    );
-
-    Row title = Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(
-            itemData['title'],
-            softWrap: true,
-            style: TextStyle(fontSize: 16,color: Colors.black),
-            textAlign: TextAlign.left,
-          ),
-        )
-      ],
-    );
-
-    Row chapterName = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        GestureDetector(
-          child: Icon(
-            Icons.favorite,color: Colors.red,
-          ),
-          onTap: (){
-            _handerListItemCollect(itemData);
-          },
-        )
-      ],
-    );
-
-    Column column = Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(10),
-          child: row1,
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(10, 5, 20, 5),
-          child: title,
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
-          child: chapterName,
-        ),
-      ],
-    );
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: (){
-          _itemClick(itemData);
-        },
-        child: column,
-      ),
-    );
+    return CollectItem(itemData,listData);
   }
 
-  void _handerListItemCollect(itemData){
-    DataUtils.isLogin().then((isLogin){
-      if(!isLogin){
-        _login();
-      }else{
-        _itemUnCollect(itemData);
-      }
-    });
-  }
-  _login() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return LoginPage();
-    }));
-  }
-  void _itemClick(var itemData) async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return ArticleDetailPage(title: itemData['title'], url: itemData['link']);
-    }));
-  }
-  void _itemUnCollect(var itemData){
-    String url;
-    url =Api.UNCOLLECT_LIST;
-    Map<String,String> map =Map();
-    map['originId']=itemData['originId'].toString();
-    url =url+itemData['id'].toString()+'/json';
-    HttpUtil.post(url, (data){
-      setState(() {
-       listData.remove(itemData);
-      });
-    },params: map);
-  }
+
+
 }
 
 
